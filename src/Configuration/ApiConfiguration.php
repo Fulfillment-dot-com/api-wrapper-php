@@ -8,6 +8,7 @@
 
 namespace Fulfillment\Api\Configuration;
 
+use FoxxMD\Utilities\ArrayUtil;
 use \Fulfillment\Api\Contracts\ApiConfiguration as ConfigContract;
 
 
@@ -21,7 +22,12 @@ class ApiConfiguration implements ConfigContract
     protected $endpoint;
 
     public function __construct($data = null){
-
+        $this->username = ArrayUtil::get($data['username']);
+        $this->password = ArrayUtil::get($data['password']);
+        $this->clientId = ArrayUtil::get($data['clientId']);
+        $this->clientSecret = ArrayUtil::get($data['clientSecret']);
+        $this->accessToken = ArrayUtil::get($data['accessToken']);
+        $this->endpoint = ArrayUtil::get($data['endpoint']);
     }
 
     public function getUsername()
