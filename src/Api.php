@@ -44,7 +44,7 @@ class Api
             $this->climate->output->add('customLogger', $logger)->defaultTo('customLogger');
         } else if (php_sapi_name() !== 'cli') {
             //if no custom logger and this isn't a CLI app then we need to write to a file
-            $path     = __DIR__ . '/logs/' . 'Log--' . date("Y-m-d") . '.log';
+            $path     = storage_path('logs/') . 'Log--' . date("Y-m-d") . '.log';
             $resource = fopen($path, 'a');;
             fclose($resource);
             $logFile = new File($path);
@@ -76,12 +76,12 @@ class Api
 
         } else if (is_array($config)) {
             $data         = [
-                'username' => ArrayUtil::get($config['USERNAME']),
-                'password' => ArrayUtil::get($config['PASSWORD']),
-                'clientId' => ArrayUtil::get($config['CLIENT_ID']),
-                'clientSecret' => ArrayUtil::get($config['CLIENT_SECRET']),
-                'accessToken' => ArrayUtil::get($config['ACCESS_TOKEN']),
-                'endPoint' => ArrayUtil::get($config['API_ENDPOINT'])
+                'username' => ArrayUtil::get($config['username']),
+                'password' => ArrayUtil::get($config['password']),
+                'clientId' => ArrayUtil::get($config['clientId']),
+                'clientSecret' => ArrayUtil::get($config['clientSecret']),
+                'accessToken' => ArrayUtil::get($config['accessToken']),
+                'endPoint' => ArrayUtil::get($config['endPoint'])
             ];
             $this->config = new ApiConfiguration($data);
 
