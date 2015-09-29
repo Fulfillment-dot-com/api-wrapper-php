@@ -12,6 +12,7 @@ namespace Fulfillment\Api;
 use FoxxMD\Utilities\ArrayUtil;
 use Fulfillment\Api\Configuration\ApiConfiguration;
 use Fulfillment\Api\Http\Request;
+use Fulfillment\Api\Utilities\RequestParser;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use League\CLImate\CLImate;
@@ -114,12 +115,13 @@ class Api
             $this->http->makeRequest($method, $url, $payload, $queryString);
         } catch (RequestException $e) {
 
-            if ($e->getResponse()->getStatusCode() == 401) {
+            if ($e->getResponse()->getStatusCode() == 401 || (isset(RequestParser::parseError($e)->error) && RequestParser::parseError($e)->error == 'invalid_request')) {
                 if ($firstTry) {
                     $this->climate->info('Possibly expired token, trying to refresh token...');
                     $newToken = $this->http->requestAccessToken();
                     if (!is_null($newToken)) {
                         $this->config->setAccessToken($newToken);
+                        file_put_contents(storage_path('auth_access_token.txt'), $newToken);
                     }
                     $this->climate->info('Retrying request...');
                     return $this->http->makeRequest($method, $url, $payload, $queryString, $firstTry = false);
