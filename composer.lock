@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "fcffbff1ca8f71dd344c20b0bc1d4ebb",
+    "hash": "5148129e7cc909641829cb7613cd2ec8",
     "packages": [
         {
             "name": "foxxmd/php-utilities",
@@ -212,7 +212,7 @@
         },
         {
             "name": "league/climate",
-            "version": "dev-master",
+            "version": "3.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/climate.git",
@@ -409,7 +409,6 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "league/climate": 20,
         "foxxmd/php-utilities": 20
     },
     "prefer-stable": false,

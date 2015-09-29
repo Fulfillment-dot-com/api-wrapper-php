@@ -5,7 +5,7 @@
     "require": {
         "guzzlehttp/guzzle": "~6.0",
         "vlucas/phpdotenv": "~1.0",
-        "league/climate": "dev-master",
+        "league/climate": "~3.2",
         "foxxmd/php-utilities": "dev-master"
     },
     "license": "MIT",
