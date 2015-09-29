@@ -81,7 +81,7 @@ class Api
                 'clientId' => ArrayUtil::get($config['clientId']),
                 'clientSecret' => ArrayUtil::get($config['clientSecret']),
                 'accessToken' => ArrayUtil::get($config['accessToken']),
-                'endPoint' => ArrayUtil::get($config['endPoint'])
+                'endpoint' => ArrayUtil::get($config['endpoint'])
             ];
             $this->config = new ApiConfiguration($data);
 
