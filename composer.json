@@ -1,0 +1,24 @@
+{
+    "name": "fulfillment/api-wrapper",
+    "description": "A barebones wrapper for the FDC api to facailitate easier authentication and communication",
+    "type": "library",
+    "require": {
+        "guzzlehttp/guzzle": "~6.0",
+        "vlucas/phpdotenv": "~1.0",
+        "league/climate": "dev-master",
+        "foxxmd/php-utilities": "dev-master"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "FoxxMD",
+            "email": "matt.duncan13@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Fulfillment\\Api\\": "src"
+        }
+    },
+    "minimum-stability": "dev"
+}
