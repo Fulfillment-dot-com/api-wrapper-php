@@ -112,7 +112,7 @@ class Api
     protected function tryRequest($method, $url, $payload = null, $queryString = null, $firstTry = true)
     {
         try {
-            $this->http->makeRequest($method, $url, $payload, $queryString);
+            return $this->http->makeRequest($method, $url, $payload, $queryString);
         } catch (RequestException $e) {
 
             if ($e->getResponse()->getStatusCode() == 401 || (isset(RequestParser::parseError($e)->error) && RequestParser::parseError($e)->error == 'invalid_request')) {
