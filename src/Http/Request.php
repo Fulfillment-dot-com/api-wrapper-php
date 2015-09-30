@@ -130,8 +130,9 @@ class Request
             }
 
             $this->climate->info('Request successful.');
+            $result = json_decode($response->getBody()); //for easier debugging
 
-            return json_decode($response->getBody());
+            return $result;
 
         } catch (RequestException $e) {
             $this->climate->error('Request failed with status code ' . $e->getResponse()->getStatusCode());
