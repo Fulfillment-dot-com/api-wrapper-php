@@ -59,6 +59,10 @@ class Request
                     [
                         'name' => 'grant_type',
                         'contents' => 'password'
+                    ],
+                    [
+                        'name' => 'scope',
+                        'contents' => $this->config->getScopes()
                     ]
                 ]
             ],

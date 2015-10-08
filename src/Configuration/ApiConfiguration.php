@@ -18,6 +18,7 @@ class ApiConfiguration implements ConfigContract
     protected $password;
     protected $clientId;
     protected $clientSecret;
+    protected $scope;
     protected $accessToken;
     protected $endpoint;
 
@@ -28,6 +29,7 @@ class ApiConfiguration implements ConfigContract
         $this->clientSecret = ArrayUtil::get($data['clientSecret']);
         $this->accessToken = ArrayUtil::get($data['accessToken']);
         $this->endpoint = ArrayUtil::get($data['endpoint']);
+        $this->scope = ArrayUtil::get($data['scope']);
     }
 
     public function getUsername()
@@ -57,6 +59,10 @@ class ApiConfiguration implements ConfigContract
 
     public function setAccessToken($token){
         $this->accessToken = $token;
+    }
+
+    public function getScope(){
+        return $this->scope;
     }
 
     public function getEndpoint()

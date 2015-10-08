@@ -17,5 +17,6 @@ interface ApiConfiguration
     public function getClientSecret();
     public function getAccessToken();
     public function setAccessToken($token);
+    public function getScope();
     public function getEndpoint();
 }

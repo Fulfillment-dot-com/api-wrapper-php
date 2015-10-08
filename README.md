@@ -42,6 +42,7 @@ Minimum requirements for auth -- you must have:
 * client secret
 * username
 * password
+* scope -- To use provide multiple scopes pass each scope delimited by a space EX `oms postage`
 
 **AND/OR**
 
@@ -55,12 +56,13 @@ Auth can be parsed using several options:
 
 ```php
 $data = [
-    'endpoint' => $endPoint,
-    'clientId' => $clientId,
+    'endpoint'     => $endPoint,
+    'clientId'     => $clientId,
     'clientSecret' => $clientSecret,
-    'accessToken' => $accessToken,
-    'username' => $username,
-    'password' => $password
+    'accessToken'  => $accessToken,
+    'username'     => $username,
+    'password'     => $password,
+    'scope'        => 'oms'
 ];
 
 $apiClient = new Api($config)
@@ -86,6 +88,7 @@ Use environmental variables (available in `$_ENV`)
 * **CLIENT_SECRET**
 * **ACCESS_TOKEN**
 * **API_ENDPOINT**
+* **SCOPE**
 
 ```php
 $apiClient = new Api();

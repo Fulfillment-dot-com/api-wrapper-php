@@ -71,7 +71,8 @@ class Api
                 'clientId' => getenv('CLIENT_ID'),
                 'clientSecret' => getenv('CLIENT_SECRET'),
                 'accessToken' => getenv('ACCESS_TOKEN'),
-                'endPoint' => getenv('API_ENDPOINT')
+                'endPoint' => getenv('API_ENDPOINT'),
+                'scope' => getenv('SCOPE')
             ];
             $this->config = new ApiConfiguration($data);
 
@@ -82,7 +83,8 @@ class Api
                 'clientId' => ArrayUtil::get($config['clientId']),
                 'clientSecret' => ArrayUtil::get($config['clientSecret']),
                 'accessToken' => ArrayUtil::get($config['accessToken']),
-                'endpoint' => ArrayUtil::get($config['endpoint'])
+                'endpoint' => ArrayUtil::get($config['endpoint']),
+                'scope' => ArrayUtil::get($config['scope'])
             ];
             $this->config = new ApiConfiguration($data);
 
@@ -103,6 +105,9 @@ class Api
         }
         if (is_null($this->config->getEndPoint())) {
             throw new \InvalidArgumentException('Must provide an endpoint');
+        }
+        if (is_null($this->config->getAccessToken()) && is_null($this->config->getScopes())) {
+            throw new \InvalidArgumentException('Must provide scopes');
         }
 
         $this->http = new Request($this->guzzle, $this->config, $this->climate);
