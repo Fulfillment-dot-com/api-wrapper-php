@@ -62,7 +62,7 @@ class Request
                     ],
                     [
                         'name' => 'scope',
-                        'contents' => $this->config->getScopes()
+                        'contents' => $this->config->getScope()
                     ]
                 ]
             ],
