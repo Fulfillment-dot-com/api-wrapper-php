@@ -10,6 +10,7 @@ namespace Fulfillment\Api\Configuration;
 
 use FoxxMD\Utilities\ArrayUtil;
 use \Fulfillment\Api\Contracts\ApiConfiguration as ConfigContract;
+use Fulfillment\Api\Exceptions\MissingCredentialException;
 
 
 class ApiConfiguration implements ConfigContract
@@ -22,14 +23,15 @@ class ApiConfiguration implements ConfigContract
     protected $accessToken;
     protected $endpoint;
 
-    public function __construct($data = null){
-        $this->username = ArrayUtil::get($data['username']);
-        $this->password = ArrayUtil::get($data['password']);
-        $this->clientId = ArrayUtil::get($data['clientId']);
+    public function __construct($data = null)
+    {
+        $this->username     = ArrayUtil::get($data['username']);
+        $this->password     = ArrayUtil::get($data['password']);
+        $this->clientId     = ArrayUtil::get($data['clientId']);
         $this->clientSecret = ArrayUtil::get($data['clientSecret']);
-        $this->accessToken = ArrayUtil::get($data['accessToken']);
-        $this->endpoint = ArrayUtil::get($data['endpoint']);
-        $this->scope = ArrayUtil::get($data['scope']);
+        $this->accessToken  = ArrayUtil::get($data['accessToken']);
+        $this->endpoint     = ArrayUtil::get($data['endpoint']);
+        $this->scope        = ArrayUtil::get($data['scope']);
     }
 
     public function getUsername()
@@ -57,11 +59,13 @@ class ApiConfiguration implements ConfigContract
         return $this->accessToken;
     }
 
-    public function setAccessToken($token){
+    public function setAccessToken($token)
+    {
         $this->accessToken = $token;
     }
 
-    public function getScope(){
+    public function getScope()
+    {
         return $this->scope;
     }
 
