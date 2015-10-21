@@ -166,16 +166,16 @@ class Api
     }
 
     /**
-     * Perform a PATCH request to the Api
+     * Perform a PUT request to the Api
      *
      * @param $url string Relative URL from API base URL
      * @param $payload array Request contents as json serializable array
      * @param null $queryString
      * @return mixed
      */
-    public function patch($url, $payload, $queryString = null)
+    public function put($url, $payload, $queryString = null)
     {
-        return $this->tryRequest('patch', $url, $payload, $queryString);
+        return $this->tryRequest('put', $url, $payload, $queryString);
     }
 
     /**
