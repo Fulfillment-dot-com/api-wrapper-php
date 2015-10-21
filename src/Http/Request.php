@@ -9,6 +9,7 @@
 namespace Fulfillment\Api\Http;
 
 use Fulfillment\Api\Configuration\ApiConfiguration;
+use Fulfillment\Api\Exceptions\MissingCredentialException;
 use Fulfillment\Api\Exceptions\UnauthorizedMerchantException;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
@@ -34,6 +35,13 @@ class Request
 
     function requestAccessToken()
     {
+
+        try {
+            $this->checkForCredentials();
+        } catch(MissingCredentialException $e){
+            $this->climate->error($e->getMessage());
+            throw $e;
+        }
 
         $this->climate->info('Requesting new access token...');
 
@@ -162,6 +170,19 @@ class Request
             }
         } else {
             $this->climate->error('<bold>Error: </bold>' . $requestException->getMessage());
+        }
+    }
+
+    private function checkForCredentials()
+    {
+        if (empty($this->config->getUsername())) {
+            throw new MissingCredentialException('username');
+        } elseif (empty($this->config->getPassword())) {
+            throw new MissingCredentialException('password');
+        } elseif (empty($this->config->getClientId())) {
+            throw new MissingCredentialException('clientId');
+        } elseif (empty($this->config->getClientSecret())) {
+            throw new MissingCredentialException('clientSecret');
         }
     }
 }
