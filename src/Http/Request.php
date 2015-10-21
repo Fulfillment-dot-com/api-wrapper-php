@@ -45,8 +45,12 @@ class Request
 
         $this->climate->info('Requesting new access token...');
 
+        $authEndPoint = $this->config->getAuthEndpoint() . '/oauth/access_token';
+
+        $this->climate->out('URL: ' . $authEndPoint);
+
         try {
-            $accessTokenResponse = $this->guzzle->post($this->config->getEndpoint() . '/oauth/access_token', [
+            $accessTokenResponse = $this->guzzle->post($authEndPoint, [
                 'multipart' => [
                     [
                         'name' => 'client_id',

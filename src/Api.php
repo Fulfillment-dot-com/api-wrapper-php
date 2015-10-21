@@ -20,6 +20,8 @@ use League\CLImate\Util\Writer\File;
 use League\CLImate\Util\Writer\WriterInterface;
 use Dotenv;
 
+include_once 'Utilities/helpers.php';
+
 class Api
 {
 
@@ -72,6 +74,7 @@ class Api
                 'clientSecret' => getenv('CLIENT_SECRET'),
                 'accessToken' => getenv('ACCESS_TOKEN'),
                 'endPoint' => getenv('API_ENDPOINT'),
+                'authEndpoint' => getenv('AUTH_ENDPOINT'),
                 'scope' => getenv('SCOPE')
             ];
             $this->config = new ApiConfiguration($data);
@@ -84,6 +87,7 @@ class Api
                 'clientSecret' => ArrayUtil::get($config['clientSecret']),
                 'accessToken' => ArrayUtil::get($config['accessToken']),
                 'endpoint' => ArrayUtil::get($config['endpoint']),
+                'authEndpoint' => ArrayUtil::get($config['authEndpoint']),
                 'scope' => ArrayUtil::get($config['scope'])
             ];
             $this->config = new ApiConfiguration($data);
@@ -91,7 +95,6 @@ class Api
         } else if ($config instanceof \Fulfillment\Api\Contracts\ApiConfiguration) {
             $this->config = $config;
         }
-
 
         if (is_null($this->config->getAccessToken())) {
             //try to get from file

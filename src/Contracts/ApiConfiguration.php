@@ -19,4 +19,5 @@ interface ApiConfiguration
     public function setAccessToken($token);
     public function getScope();
     public function getEndpoint();
+    public function getAuthEndpoint();
 }

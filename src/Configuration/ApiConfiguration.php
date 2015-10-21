@@ -22,6 +22,7 @@ class ApiConfiguration implements ConfigContract
     protected $scope;
     protected $accessToken;
     protected $endpoint;
+    protected $authEndpoint;
 
     public function __construct($data = null)
     {
@@ -32,6 +33,11 @@ class ApiConfiguration implements ConfigContract
         $this->accessToken  = ArrayUtil::get($data['accessToken']);
         $this->endpoint     = ArrayUtil::get($data['endpoint']);
         $this->scope        = ArrayUtil::get($data['scope']);
+        $this->authEndpoint = ArrayUtil::get($data['authEndpoint']);
+
+        if(is_null($this->authEndpoint) || !$this->authEndpoint){
+            $this->authEndpoint = 'https://auth.fulfillment.com';
+        }
     }
 
     public function getUsername()
@@ -72,5 +78,10 @@ class ApiConfiguration implements ConfigContract
     public function getEndpoint()
     {
         return $this->endpoint;
+    }
+
+    public function getAuthEndpoint()
+    {
+        return $this->authEndpoint;
     }
 }
