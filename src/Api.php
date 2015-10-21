@@ -32,6 +32,7 @@ class Api
      * @param $config array|string|\Fulfillment\Api\Contracts\ApiConfiguration|null
      * @param $logger WriterInterface|null
      * @param $guzzle Client|null
+     *
      * @throws \Exception
      */
     public function __construct($config = null, $logger = null, $guzzle = null)
@@ -68,14 +69,14 @@ class Api
                 Dotenv::load($config);
             }
             $data         = [
-                'username' => getenv('USERNAME'),
-                'password' => getenv('PASSWORD'),
-                'clientId' => getenv('CLIENT_ID'),
-                'clientSecret' => getenv('CLIENT_SECRET'),
-                'accessToken' => getenv('ACCESS_TOKEN'),
-                'endPoint' => getenv('API_ENDPOINT'),
-                'authEndpoint' => getenv('AUTH_ENDPOINT'),
-                'scope' => getenv('SCOPE')
+                'username' => getenv('USERNAME') ?: null,
+                'password' => getenv('PASSWORD') ?: null,
+                'clientId' => getenv('CLIENT_ID') ?: null,
+                'clientSecret' => getenv('CLIENT_SECRET') ?: null,
+                'accessToken' => getenv('ACCESS_TOKEN') ?: null,
+                'endPoint' => getenv('API_ENDPOINT') ?: null,
+                'authEndpoint' => getenv('AUTH_ENDPOINT') ?: null,
+                'scope' => getenv('SCOPE') ?: null
             ];
             $this->config = new ApiConfiguration($data);
 
@@ -146,8 +147,9 @@ class Api
     /**
      * Perform a GET request to the Api
      *
-     * @param $url string Relative URL from API base URL
+     * @param      $url string Relative URL from API base URL
      * @param null $queryString
+     *
      * @return mixed
      */
     public function get($url, $queryString = null)
@@ -158,9 +160,10 @@ class Api
     /**
      * Perform a POST request to the Api
      *
-     * @param $url string Relative URL from API base URL
-     * @param $payload array Request contents as json serializable array
+     * @param      $url     string Relative URL from API base URL
+     * @param      $payload array Request contents as json serializable array
      * @param null $queryString
+     *
      * @return mixed
      */
     public function post($url, $payload, $queryString = null)
@@ -171,9 +174,10 @@ class Api
     /**
      * Perform a PUT request to the Api
      *
-     * @param $url string Relative URL from API base URL
-     * @param $payload array Request contents as json serializable array
+     * @param      $url     string Relative URL from API base URL
+     * @param      $payload array Request contents as json serializable array
      * @param null $queryString
+     *
      * @return mixed
      */
     public function put($url, $payload, $queryString = null)
@@ -184,8 +188,9 @@ class Api
     /**
      * Perform a DELETE request to the Api
      *
-     * @param $url string Relative URL from API base URL
+     * @param      $url string Relative URL from API base URL
      * @param null $queryString
+     *
      * @return mixed
      */
     public function delete($url, $queryString = null)
