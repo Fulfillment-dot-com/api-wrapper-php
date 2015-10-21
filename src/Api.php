@@ -110,7 +110,7 @@ class Api
         if (is_null($this->config->getEndPoint())) {
             throw new \InvalidArgumentException('Must provide an endpoint');
         }
-        if (is_null($this->config->getAccessToken()) && is_null($this->config->getScopes())) {
+        if (is_null($this->config->getAccessToken()) && is_null($this->config->getScope())) {
             throw new \InvalidArgumentException('Must provide scopes');
         }
 
