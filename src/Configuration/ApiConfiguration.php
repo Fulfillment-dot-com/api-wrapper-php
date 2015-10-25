@@ -10,7 +10,6 @@ namespace Fulfillment\Api\Configuration;
 
 use FoxxMD\Utilities\ArrayUtil;
 use \Fulfillment\Api\Contracts\ApiConfiguration as ConfigContract;
-use Fulfillment\Api\Exceptions\MissingCredentialException;
 
 
 class ApiConfiguration implements ConfigContract

@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by IntelliJ IDEA.
- * User: mduncan
- * Date: 9/29/15
- * Time: 11:38 AM
- */
 
 namespace Fulfillment\Api;
 
@@ -12,6 +6,7 @@ namespace Fulfillment\Api;
 use FoxxMD\Utilities\ArrayUtil;
 use Fulfillment\Api\Configuration\ApiConfiguration;
 use Fulfillment\Api\Http\Request;
+use Fulfillment\Api\Utilities\Helper;
 use Fulfillment\Api\Utilities\RequestParser;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
@@ -19,8 +14,6 @@ use League\CLImate\CLImate;
 use League\CLImate\Util\Writer\File;
 use League\CLImate\Util\Writer\WriterInterface;
 use Dotenv;
-
-include_once 'Utilities/helpers.php';
 
 class Api
 {
@@ -48,7 +41,7 @@ class Api
             $this->climate->output->add('customLogger', $logger)->defaultTo('customLogger');
         } else if (php_sapi_name() !== 'cli') {
             //if no custom logger and this isn't a CLI app then we need to write to a file
-            $path     = storage_path('logs/') . 'Log--' . date("Y-m-d") . '.log';
+            $path     = Helper::getStoragePath('logs/') . 'Log--' . date("Y-m-d") . '.log';
             $resource = fopen($path, 'a');;
             fclose($resource);
             $logFile = new File($path);
@@ -99,8 +92,8 @@ class Api
 
         if (is_null($this->config->getAccessToken())) {
             //try to get from file
-            if (file_exists(storage_path('auth_access_token.txt'))) {
-                $this->config->setAccessToken(file_get_contents(storage_path('auth_access_token.txt')));
+            if (file_exists(Helper::getStoragePath('auth_access_token.txt'))) {
+                $this->config->setAccessToken(file_get_contents(Helper::getStoragePath('auth_access_token.txt')));
             }
         }
 
@@ -130,10 +123,10 @@ class Api
                     $newToken = $this->http->requestAccessToken();
                     if (!is_null($newToken)) {
                         $this->config->setAccessToken($newToken);
-                        file_put_contents(storage_path('auth_access_token.txt'), $newToken);
+                        file_put_contents(Helper::getStoragePath('auth_access_token.txt'), $newToken);
                     }
                     $this->climate->info('Retrying request...');
-                    return $this->http->makeRequest($method, $url, $payload, $queryString, $firstTry = false);
+                    return $this->http->makeRequest($method, $url, $payload, $queryString);
                 } else {
                     //something else is wrong and requesting a new token isn't going to fix it
                     throw new \Exception('The request was unauthorized and could not be fixed by refreshing access token.', 0, $e);

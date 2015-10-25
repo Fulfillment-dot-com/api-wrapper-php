@@ -104,13 +104,12 @@ class Request
      * @param $method string The HTTP VERB to use for this request
      * @param $url string The relative URL after the hostname
      * @param null $apiRequest array The contents of the api body
-     * @param null $queryString array Data to add as a querystring to the url
-     * @param bool|true $firstTry Indicates whether this is the first attempt to make this request
+     * @param null $queryString array Data to add as a queryString to the url
      * @return mixed
      * @throws UnauthorizedMerchantException
      * @throws \Exception
      */
-    function makeRequest($method, $url, $apiRequest = null, $queryString = null, $firstTry = true)
+    function makeRequest($method, $url, $apiRequest = null, $queryString = null)
     {
         $urlEndPoint = $this->config->getEndpoint() . '/' . $url;
 
