@@ -11,6 +11,10 @@ class Helper
      */
     public static function getStoragePath($path = '')
     {
-            return (__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '../storage/') . ($path ? DIRECTORY_SEPARATOR . $path : $path);
+        if(function_exists('storage_path')){
+            return storage_path($path);
+        }else {
+            return (__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '../storage') . ($path ? DIRECTORY_SEPARATOR . $path : $path);
+        }
     }
 }
