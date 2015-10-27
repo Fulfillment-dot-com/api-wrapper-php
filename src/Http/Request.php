@@ -12,6 +12,7 @@ use Fulfillment\Api\Configuration\ApiConfiguration;
 use Fulfillment\Api\Exceptions\MissingCredentialException;
 use Fulfillment\Api\Exceptions\UnauthorizedMerchantException;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\RequestException;
 use League\CLImate\CLImate;
 
@@ -149,6 +150,9 @@ class Request
 
             return $result;
 
+        } catch (ConnectException $c){
+            $this->climate->error('Error connecting to endpoint: ' . $c->getMessage());
+            throw $c;
         } catch (RequestException $e) {
             $this->climate->error('Request failed with status code ' . $e->getResponse()->getStatusCode());
             $this->printError($e);

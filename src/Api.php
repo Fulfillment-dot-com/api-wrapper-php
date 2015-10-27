@@ -9,6 +9,7 @@ use Fulfillment\Api\Http\Request;
 use Fulfillment\Api\Utilities\Helper;
 use Fulfillment\Api\Utilities\RequestParser;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\RequestException;
 use League\CLImate\CLImate;
 use League\CLImate\Util\Writer\File;
@@ -115,6 +116,9 @@ class Api
     {
         try {
             return $this->http->makeRequest($method, $url, $payload, $queryString);
+        } catch (ConnectException $c){
+            $this->climate->error('Error connecting to endpoint: ' . $c->getMessage());
+            throw $c;
         } catch (RequestException $e) {
 
             if ($e->getResponse()->getStatusCode() == 401 || (isset(RequestParser::parseError($e)->error) && RequestParser::parseError($e)->error == 'invalid_request')) {
