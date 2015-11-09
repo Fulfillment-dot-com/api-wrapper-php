@@ -112,6 +112,10 @@ class Api
 
     }
 
+    public function config(){
+        return $this->config;
+    }
+
     protected function tryRequest($method, $url, $payload = null, $queryString = null, $firstTry = true)
     {
         try {
