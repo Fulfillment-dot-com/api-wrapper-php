@@ -70,7 +70,8 @@ class Api
                 'accessToken' => getenv('ACCESS_TOKEN') ?: null,
                 'endPoint' => getenv('API_ENDPOINT') ?: null,
                 'authEndpoint' => getenv('AUTH_ENDPOINT') ?: null,
-                'scope' => getenv('SCOPE') ?: null
+                'scope' => getenv('SCOPE') ?: null,
+                'storeToken' => getenv('STORE_TOKEN') ?: null
             ];
             $this->config = new ApiConfiguration($data);
 
@@ -83,7 +84,8 @@ class Api
                 'accessToken' => ArrayUtil::get($config['accessToken']),
                 'endpoint' => ArrayUtil::get($config['endpoint']),
                 'authEndpoint' => ArrayUtil::get($config['authEndpoint']),
-                'scope' => ArrayUtil::get($config['scope'])
+                'scope' => ArrayUtil::get($config['scope']),
+                'storeToken' => ArrayUtil::get($config['storeToken'])
             ];
             $this->config = new ApiConfiguration($data);
 
@@ -91,7 +93,7 @@ class Api
             $this->config = $config;
         }
 
-        if (is_null($this->config->getAccessToken())) {
+        if ($this->config->shouldStoreToken() && is_null($this->config->getAccessToken())) {
             //try to get from file
             if (file_exists(Helper::getStoragePath('auth_access_token.txt'))) {
                 $this->config->setAccessToken(file_get_contents(Helper::getStoragePath('auth_access_token.txt')));
@@ -104,7 +106,7 @@ class Api
         if (is_null($this->config->getEndPoint())) {
             throw new \InvalidArgumentException('Must provide an endpoint');
         }
-        if (is_null($this->config->getAccessToken()) && is_null($this->config->getScope())) {
+        if (is_null($this->config->getScope())) {
             throw new \InvalidArgumentException('Must provide scopes');
         }
 
@@ -131,10 +133,12 @@ class Api
                     $newToken = $this->http->requestAccessToken();
                     if (!is_null($newToken)) {
                         $this->config->setAccessToken($newToken);
-                        file_put_contents(Helper::getStoragePath('auth_access_token.txt'), $newToken);
+                        if($this->config->shouldStoreToken()) {
+                            file_put_contents(Helper::getStoragePath('auth_access_token.txt'), $newToken);
+                        }
                     }
                     $this->climate->info('Retrying request...');
-                    return $this->http->makeRequest($method, $url, $payload, $queryString);
+                    return $this->tryRequest($method, $url, $payload, $queryString, false);
                 } else {
                     //something else is wrong and requesting a new token isn't going to fix it
                     throw new \Exception('The request was unauthorized and could not be fixed by refreshing access token.', 0, $e);

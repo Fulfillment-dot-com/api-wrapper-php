@@ -22,6 +22,7 @@ class ApiConfiguration implements ConfigContract
     protected $accessToken;
     protected $endpoint;
     protected $authEndpoint;
+    protected $storeToken;
 
     public function __construct($data = null)
     {
@@ -33,6 +34,7 @@ class ApiConfiguration implements ConfigContract
         $this->endpoint     = ArrayUtil::get($data['endpoint']);
         $this->scope        = ArrayUtil::get($data['scope']);
         $this->authEndpoint = ArrayUtil::get($data['authEndpoint'], 'https://auth.fulfillment.com');
+        $this->storeToken   = ArrayUtil::get($data['storeToken'], true);
     }
 
     public function getUsername()
@@ -78,5 +80,15 @@ class ApiConfiguration implements ConfigContract
     public function getAuthEndpoint()
     {
         return $this->authEndpoint;
+    }
+
+    public function setShouldStoreToken($bool)
+    {
+        $this->storeToken = $bool;
+    }
+
+    public function shouldStoreToken()
+    {
+        return $this->storeToken;
     }
 }

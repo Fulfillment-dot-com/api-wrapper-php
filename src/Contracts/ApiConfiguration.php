@@ -20,4 +20,6 @@ interface ApiConfiguration
     public function getScope();
     public function getEndpoint();
     public function getAuthEndpoint();
+    public function setShouldStoreToken($token);
+    public function shouldStoreToken();
 }
