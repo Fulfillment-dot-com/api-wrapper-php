@@ -23,6 +23,7 @@ class ApiConfiguration implements ConfigContract
     protected $endpoint;
     protected $authEndpoint;
     protected $storeToken;
+    protected $loggerPrefix;
 
     public function __construct($data = null)
     {
@@ -35,6 +36,7 @@ class ApiConfiguration implements ConfigContract
         $this->scope        = ArrayUtil::get($data['scope']);
         $this->authEndpoint = ArrayUtil::get($data['authEndpoint'], 'https://auth.fulfillment.com');
         $this->storeToken   = ArrayUtil::get($data['storeToken'], true);
+        $this->loggerPrefix = ArrayUtil::get($data['loggerPrefix']);
     }
 
     public function getUsername()
@@ -90,5 +92,15 @@ class ApiConfiguration implements ConfigContract
     public function shouldStoreToken()
     {
         return $this->storeToken;
+    }
+
+    public function setLoggerPrefix($prefix)
+    {
+        $this->loggerPrefix = $prefix;
+    }
+
+    public function getLoggerPrefix()
+    {
+        return (!is_null($this->loggerPrefix) ? ('[' . $this->loggerPrefix . '] ') : '');
     }
 }

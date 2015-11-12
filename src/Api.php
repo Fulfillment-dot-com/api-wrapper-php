@@ -71,7 +71,8 @@ class Api
                 'endPoint' => getenv('API_ENDPOINT') ?: null,
                 'authEndpoint' => getenv('AUTH_ENDPOINT') ?: null,
                 'scope' => getenv('SCOPE') ?: null,
-                'storeToken' => getenv('STORE_TOKEN') ?: null
+                'storeToken' => getenv('STORE_TOKEN') ?: null,
+                'loggerPrefix' => getenv('LOGGER_PREFIX') ?: null
             ];
             $this->config = new ApiConfiguration($data);
 
@@ -85,7 +86,8 @@ class Api
                 'endpoint' => ArrayUtil::get($config['endpoint']),
                 'authEndpoint' => ArrayUtil::get($config['authEndpoint']),
                 'scope' => ArrayUtil::get($config['scope']),
-                'storeToken' => ArrayUtil::get($config['storeToken'])
+                'storeToken' => ArrayUtil::get($config['storeToken']),
+                'loggerPrefix' => ArrayUtil::get($config['loggerPrefix'])
             ];
             $this->config = new ApiConfiguration($data);
 
@@ -97,17 +99,18 @@ class Api
             //try to get from file
             if (file_exists(Helper::getStoragePath('auth_access_token.txt'))) {
                 $this->config->setAccessToken(file_get_contents(Helper::getStoragePath('auth_access_token.txt')));
+                $this->climate->info($this->config->getLoggerPrefix() . 'Got token ' . $this->config->getAccessToken() . ' from storage.');
             }
         }
 
         if (is_null($this->config->getAccessToken()) && (is_null($this->config->getClientId()) || is_null($this->config->getClientSecret()) || is_null($this->config->getUsername()) || is_null($this->config->getPassword()))) {
-            throw new \InvalidArgumentException('No access token provided -- so client Id, client secret, username, and password must be provided');
+            throw new \InvalidArgumentException($this->config->getLoggerPrefix() . 'No access token provided -- so client Id, client secret, username, and password must be provided');
         }
         if (is_null($this->config->getEndPoint())) {
-            throw new \InvalidArgumentException('Must provide an endpoint');
+            throw new \InvalidArgumentException($this->config->getLoggerPrefix() . 'Must provide an endpoint');
         }
         if (is_null($this->config->getScope())) {
-            throw new \InvalidArgumentException('Must provide scopes');
+            throw new \InvalidArgumentException($this->config->getLoggerPrefix() . 'Must provide scopes');
         }
 
         $this->http = new Request($this->guzzle, $this->config, $this->climate);
@@ -123,25 +126,25 @@ class Api
         try {
             return $this->http->makeRequest($method, $url, $payload, $queryString);
         } catch (ConnectException $c){
-            $this->climate->error('Error connecting to endpoint: ' . $c->getMessage());
+            $this->climate->error($this->config->getLoggerPrefix() . 'Error connecting to endpoint: ' . $c->getMessage());
             throw $c;
         } catch (RequestException $e) {
 
             if ($e->getResponse()->getStatusCode() == 401 || (isset(RequestParser::parseError($e)->error) && RequestParser::parseError($e)->error == 'invalid_request')) {
                 if ($firstTry) {
-                    $this->climate->info('Possibly expired token, trying to refresh token...');
+                    $this->climate->info($this->config->getLoggerPrefix() . 'Possibly expired token, trying to refresh token...');
                     $newToken = $this->http->requestAccessToken();
                     if (!is_null($newToken)) {
                         $this->config->setAccessToken($newToken);
                         if($this->config->shouldStoreToken()) {
-                            file_put_contents(Helper::getStoragePath('auth_access_token.txt'), $newToken);
+                            file_put_contents(Helper::getStoragePath($this->config->getLoggerPrefix() . 'auth_access_token.txt'), $newToken);
                         }
                     }
-                    $this->climate->info('Retrying request...');
+                    $this->climate->info($this->config->getLoggerPrefix() . 'Retrying request...');
                     return $this->tryRequest($method, $url, $payload, $queryString, false);
                 } else {
                     //something else is wrong and requesting a new token isn't going to fix it
-                    throw new \Exception('The request was unauthorized and could not be fixed by refreshing access token.', 0, $e);
+                    throw new \Exception($this->config->getLoggerPrefix() . 'The request was unauthorized and could not be fixed by refreshing access token.', 0, $e);
                 }
             } else {
                 throw $e;

@@ -44,11 +44,11 @@ class Request
             throw $e;
         }
 
-        $this->climate->info('Requesting new access token...');
+        $this->climate->info($this->config->getLoggerPrefix() . 'Requesting new access token...');
 
         $authEndPoint = $this->config->getAuthEndpoint() . '/oauth/access_token';
 
-        $this->climate->out('URL: ' . $authEndPoint);
+        $this->climate->out($this->config->getLoggerPrefix() . 'URL: ' . $authEndPoint);
 
         try {
             $accessTokenResponse = $this->guzzle->post($authEndPoint, [
@@ -83,7 +83,7 @@ class Request
                     'http_errors' => false]
             );
         } catch (RequestException $e) {
-            $this->climate->error('Requesting access token has failed.');
+            $this->climate->error($this->config->getLoggerPrefix() . 'Requesting access token has failed.');
 
             $this->printError($e);
 
@@ -91,8 +91,8 @@ class Request
         }
         $accessTokenJson = json_decode($accessTokenResponse->getBody());
 
-        $this->climate->info('Got new access token!');
-        $this->climate->info('Token: '  . $accessTokenJson->access_token);
+        $this->climate->info($this->config->getLoggerPrefix() . 'Got new access token!');
+        $this->climate->info($this->config->getLoggerPrefix() . 'Token: '  . $accessTokenJson->access_token);
 
         return $accessTokenJson->access_token;
 
@@ -115,7 +115,7 @@ class Request
         $urlEndPoint = $this->config->getEndpoint() . '/' . $url;
 
         //we want to see the url being called
-        $this->climate->out('URL: ' . $urlEndPoint);
+        $this->climate->out($this->config->getLoggerPrefix() . 'URL: ' . $urlEndPoint);
 
         $data = [
             'headers' => [
@@ -141,20 +141,20 @@ class Request
                     $response = $this->guzzle->get($urlEndPoint, $data);
                     break;
                 default:
-                    throw new \Exception('Missing request method!');
+                    throw new \Exception($this->config->getLoggerPrefix() . 'Missing request method!');
 
             }
 
-            $this->climate->info('Request successful.');
+            $this->climate->info($this->config->getLoggerPrefix() . 'Request successful.');
             $result = json_decode($response->getBody()); //for easier debugging
 
             return $result;
 
         } catch (ConnectException $c){
-            $this->climate->error('Error connecting to endpoint: ' . $c->getMessage());
+            $this->climate->error($this->config->getLoggerPrefix() . 'Error connecting to endpoint: ' . $c->getMessage());
             throw $c;
         } catch (RequestException $e) {
-            $this->climate->error('Request failed with status code ' . $e->getResponse()->getStatusCode());
+            $this->climate->error($this->config->getLoggerPrefix() . 'Request failed with status code ' . $e->getResponse()->getStatusCode());
             $this->printError($e);
             throw $e;
         }
@@ -166,30 +166,30 @@ class Request
         $error = $error = json_decode($requestException->getResponse()->getBody());
 
         if (!is_null($error) && isset($error->error)) {
-            $this->climate->error('<bold>Error: </bold>' . $error->error);
-            $this->climate->error('<bold>Description: </bold> ' . $error->error_description);
+            $this->climate->error($this->config->getLoggerPrefix() . '<bold>Error: </bold>' . $error->error);
+            $this->climate->error($this->config->getLoggerPrefix() . '<bold>Description: </bold> ' . $error->error_description);
         } else if (!is_null($error) && isset($error->message)) {
-            $this->climate->error('<bold>Error: </bold>' . $error->message);
+            $this->climate->error($this->config->getLoggerPrefix() . '<bold>Error: </bold>' . $error->message);
             if (isset($error->validationErrors)) {
                 foreach ($error->validationErrors as $prop => $message) {
-                    $this->climate->error('-- ' . $prop . ': ' . $message);
+                    $this->climate->error($this->config->getLoggerPrefix() . '-- ' . $prop . ': ' . $message);
                 }
             }
         } else {
-            $this->climate->error('<bold>Error: </bold>' . $requestException->getMessage());
+            $this->climate->error($this->config->getLoggerPrefix() . '<bold>Error: </bold>' . $requestException->getMessage());
         }
     }
 
     private function checkForCredentials()
     {
         if (empty($this->config->getUsername())) {
-            throw new MissingCredentialException('username');
+            throw new MissingCredentialException($this->config->getLoggerPrefix() . 'username');
         } elseif (empty($this->config->getPassword())) {
-            throw new MissingCredentialException('password');
+            throw new MissingCredentialException($this->config->getLoggerPrefix() . 'password');
         } elseif (empty($this->config->getClientId())) {
-            throw new MissingCredentialException('clientId');
+            throw new MissingCredentialException($this->config->getLoggerPrefix() . 'clientId');
         } elseif (empty($this->config->getClientSecret())) {
-            throw new MissingCredentialException('clientSecret');
+            throw new MissingCredentialException($this->config->getLoggerPrefix() . 'clientSecret');
         }
     }
 }

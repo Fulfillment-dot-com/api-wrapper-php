@@ -22,4 +22,6 @@ interface ApiConfiguration
     public function getAuthEndpoint();
     public function setShouldStoreToken($token);
     public function shouldStoreToken();
+    public function setLoggerPrefix($prefix);
+    public function getLoggerPrefix();
 }
