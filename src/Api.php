@@ -40,17 +40,19 @@ class Api
 
         if (!is_null($logger)) {
             $this->climate->output->add('customLogger', $logger)->defaultTo('customLogger');
-        } else if (php_sapi_name() !== 'cli') {
-            //if no custom logger and this isn't a CLI app then we need to write to a file
-            $path     = Helper::getStoragePath('logs/') . 'Log--' . date("Y-m-d") . '.log';
-            $resource = fopen($path, 'a');;
-            fclose($resource);
-            $logFile = new File($path);
-            $this->climate->output->add('file', $logFile)->defaultTo('file');
+        } else {
+            if (php_sapi_name() !== 'cli') {
+                //if no custom logger and this isn't a CLI app then we need to write to a file
+                $path     = Helper::getStoragePath('logs/') . 'Log--' . date("Y-m-d") . '.log';
+                $resource = fopen($path, 'a');;
+                fclose($resource);
+                $logFile = new File($path);
+                $this->climate->output->add('file', $logFile)->defaultTo('file');
 
-            if (!getenv('NOANSI')) {
-                //we want to logs to have ANSI encoding so we can tail the log remotely and get pretty colors
-                $this->climate->forceAnsiOn();
+                if (!getenv('NOANSI')) {
+                    //we want to logs to have ANSI encoding so we can tail the log remotely and get pretty colors
+                    $this->climate->forceAnsiOn();
+                }
             }
         }
 
@@ -63,36 +65,40 @@ class Api
                 Dotenv::load($config);
             }
             $data         = [
-                'username' => getenv('USERNAME') ?: null,
-                'password' => getenv('PASSWORD') ?: null,
-                'clientId' => getenv('CLIENT_ID') ?: null,
+                'username'     => getenv('USERNAME') ?: null,
+                'password'     => getenv('PASSWORD') ?: null,
+                'clientId'     => getenv('CLIENT_ID') ?: null,
                 'clientSecret' => getenv('CLIENT_SECRET') ?: null,
-                'accessToken' => getenv('ACCESS_TOKEN') ?: null,
-                'endPoint' => getenv('API_ENDPOINT') ?: null,
+                'accessToken'  => getenv('ACCESS_TOKEN') ?: null,
+                'endPoint'     => getenv('API_ENDPOINT') ?: null,
                 'authEndpoint' => getenv('AUTH_ENDPOINT') ?: null,
-                'scope' => getenv('SCOPE') ?: null,
-                'storeToken' => getenv('STORE_TOKEN') ?: null,
+                'scope'        => getenv('SCOPE') ?: null,
+                'storeToken'   => getenv('STORE_TOKEN') ?: null,
                 'loggerPrefix' => getenv('LOGGER_PREFIX') ?: null
             ];
             $this->config = new ApiConfiguration($data);
 
-        } else if (is_array($config)) {
-            $data         = [
-                'username' => ArrayUtil::get($config['username']),
-                'password' => ArrayUtil::get($config['password']),
-                'clientId' => ArrayUtil::get($config['clientId']),
-                'clientSecret' => ArrayUtil::get($config['clientSecret']),
-                'accessToken' => ArrayUtil::get($config['accessToken']),
-                'endpoint' => ArrayUtil::get($config['endpoint']),
-                'authEndpoint' => ArrayUtil::get($config['authEndpoint']),
-                'scope' => ArrayUtil::get($config['scope']),
-                'storeToken' => ArrayUtil::get($config['storeToken']),
-                'loggerPrefix' => ArrayUtil::get($config['loggerPrefix'])
-            ];
-            $this->config = new ApiConfiguration($data);
+        } else {
+            if (is_array($config)) {
+                $data         = [
+                    'username'     => ArrayUtil::get($config['username']),
+                    'password'     => ArrayUtil::get($config['password']),
+                    'clientId'     => ArrayUtil::get($config['clientId']),
+                    'clientSecret' => ArrayUtil::get($config['clientSecret']),
+                    'accessToken'  => ArrayUtil::get($config['accessToken']),
+                    'endpoint'     => ArrayUtil::get($config['endpoint']),
+                    'authEndpoint' => ArrayUtil::get($config['authEndpoint']),
+                    'scope'        => ArrayUtil::get($config['scope']),
+                    'storeToken'   => ArrayUtil::get($config['storeToken']),
+                    'loggerPrefix' => ArrayUtil::get($config['loggerPrefix'])
+                ];
+                $this->config = new ApiConfiguration($data);
 
-        } else if ($config instanceof \Fulfillment\Api\Contracts\ApiConfiguration) {
-            $this->config = $config;
+            } else {
+                if ($config instanceof \Fulfillment\Api\Contracts\ApiConfiguration) {
+                    $this->config = $config;
+                }
+            }
         }
 
         if ($this->config->shouldStoreToken() && is_null($this->config->getAccessToken())) {
@@ -117,7 +123,8 @@ class Api
 
     }
 
-    public function config(){
+    public function config()
+    {
         return $this->config;
     }
 
@@ -125,7 +132,7 @@ class Api
     {
         try {
             return $this->http->makeRequest($method, $url, $payload, $queryString);
-        } catch (ConnectException $c){
+        } catch (ConnectException $c) {
             $this->climate->error($this->config->getLoggerPrefix() . 'Error connecting to endpoint: ' . $c->getMessage());
             throw $c;
         } catch (RequestException $e) {
@@ -136,11 +143,13 @@ class Api
                     $newToken = $this->http->requestAccessToken();
                     if (!is_null($newToken)) {
                         $this->config->setAccessToken($newToken);
-                        if($this->config->shouldStoreToken()) {
+                        $this->http = new Request($this->guzzle, $this->config, $this->climate);
+                        if ($this->config->shouldStoreToken()) {
                             file_put_contents(Helper::getStoragePath($this->config->getLoggerPrefix() . 'auth_access_token.txt'), $newToken);
                         }
                     }
                     $this->climate->info($this->config->getLoggerPrefix() . 'Retrying request...');
+
                     return $this->tryRequest($method, $url, $payload, $queryString, false);
                 } else {
                     //something else is wrong and requesting a new token isn't going to fix it
@@ -150,6 +159,27 @@ class Api
                 throw $e;
             }
         }
+    }
+
+    /**
+     * Get a new access token
+     *
+     * @return string|null
+     * @throws Exceptions\MissingCredentialException
+     * @throws Exceptions\UnauthorizedMerchantException
+     */
+    public function refreshAccessToken()
+    {
+        $newToken = $this->http->requestAccessToken();
+        if (!is_null($newToken)) {
+            $this->config->setAccessToken($newToken);
+            $this->http = new Request($this->guzzle, $this->config, $this->climate);
+            if ($this->config->shouldStoreToken()) {
+                file_put_contents(Helper::getStoragePath($this->config->getLoggerPrefix() . 'auth_access_token.txt'), $newToken);
+            }
+        }
+
+        return $newToken;
     }
 
     /**
