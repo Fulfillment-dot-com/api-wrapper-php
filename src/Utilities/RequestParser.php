@@ -16,7 +16,7 @@ class RequestParser
     public static function parseError(RequestException $requestException)
     {
 
-        $error = $error = json_decode($requestException->getResponse()->getBody());
+        $error = $error = json_decode($requestException->getResponse()->getBody(), true);
 
         if (!is_null($error)) {
             return $error;

@@ -163,20 +163,20 @@ class Request
     private function printError(RequestException $requestException)
     {
 
-        $error = $error = json_decode($requestException->getResponse()->getBody());
+        $error = $error = json_decode($requestException->getResponse()->getBody(), true);
 
-        if (!is_null($error) && isset($error->error)) {
-            $this->climate->error($this->config->getLoggerPrefix() . '<bold>Error: </bold>' . $error->error);
-            $this->climate->error($this->config->getLoggerPrefix() . '<bold>Description: </bold> ' . $error->error_description);
-        } else if (!is_null($error) && isset($error->message)) {
-            $this->climate->error($this->config->getLoggerPrefix() . '<bold>Error: </bold>' . $error->message);
-            if (isset($error->validationErrors)) {
-                if(is_array($error->validationErrors)){
-                    foreach ($error->validationErrors as $prop => $message) {
+        if (!is_null($error) && isset($error['error'])) {
+            $this->climate->error($this->config->getLoggerPrefix() . '<bold>Error: </bold>' . $error['error']);
+            $this->climate->error($this->config->getLoggerPrefix() . '<bold>Description: </bold> ' . $error['error_description']);
+        } else if (!is_null($error) && isset($error['message'])) {
+            $this->climate->error($this->config->getLoggerPrefix() . '<bold>Error: </bold>' . $error['message']);
+            if (isset($error['validationErrors'])) {
+                if(is_array($error['validationErrors'])){
+                    foreach ($error['validationErrors'] as $prop => $message) {
                         $this->climate->error($this->config->getLoggerPrefix() . '-- ' . $prop . ': ' . $message);
                     }
                 } else {
-                    $this->climate->error($this->config->getLoggerPrefix() . '-- ' . $error->validationErrors);
+                    $this->climate->error($this->config->getLoggerPrefix() . '-- ' . $error['validationErrors']);
                 }
             }
         } else {
