@@ -171,7 +171,7 @@ class Request
         } else if (!is_null($error) && isset($error->message)) {
             $this->climate->error($this->config->getLoggerPrefix() . '<bold>Error: </bold>' . $error->message);
             if (isset($error->validationErrors)) {
-                if(is_array($error->valdationErrors)){
+                if(is_array($error->validationErrors)){
                     foreach ($error->validationErrors as $prop => $message) {
                         $this->climate->error($this->config->getLoggerPrefix() . '-- ' . $prop . ': ' . $message);
                     }
