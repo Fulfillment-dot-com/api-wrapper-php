@@ -23,15 +23,15 @@ class Request
     protected $climate;
 
     /**
-     * @param Client $guzzle
+     * @param Client           $guzzle
      * @param ApiConfiguration $config array
-     * @param CLImate $climate
+     * @param CLImate          $climate
      */
     public function __construct(Client $guzzle, ApiConfiguration &$config, CLImate $climate)
     {
-        $this->guzzle           = $guzzle;
-        $this->config           = $config;
-        $this->climate          = $climate;
+        $this->guzzle  = $guzzle;
+        $this->config  = $config;
+        $this->climate = $climate;
     }
 
     function requestAccessToken()
@@ -39,7 +39,7 @@ class Request
 
         try {
             $this->checkForCredentials();
-        } catch(MissingCredentialException $e){
+        } catch (MissingCredentialException $e) {
             $this->climate->error($e->getMessage());
             throw $e;
         }
@@ -54,33 +54,33 @@ class Request
             $accessTokenResponse = $this->guzzle->post($authEndPoint, [
                 'multipart' => [
                     [
-                        'name' => 'client_id',
+                        'name'     => 'client_id',
                         'contents' => $this->config->getClientId()
                     ],
                     [
-                        'name' => 'client_secret',
+                        'name'     => 'client_secret',
                         'contents' => $this->config->getClientSecret()
                     ],
                     [
-                        'name' => 'username',
+                        'name'     => 'username',
                         'contents' => $this->config->getUsername()
                     ],
                     [
-                        'name' => 'password',
+                        'name'     => 'password',
                         'contents' => $this->config->getPassword()
                     ],
                     [
-                        'name' => 'grant_type',
+                        'name'     => 'grant_type',
                         'contents' => 'password'
                     ],
                     [
-                        'name' => 'scope',
+                        'name'     => 'scope',
                         'contents' => $this->config->getScope()
                     ]
                 ]
             ],
-                [
-                    'http_errors' => false]
+                                                       [
+                                                           'http_errors' => false]
             );
         } catch (RequestException $e) {
             $this->climate->error($this->config->getLoggerPrefix() . 'Requesting access token has failed.');
@@ -92,7 +92,7 @@ class Request
         $accessTokenJson = json_decode($accessTokenResponse->getBody());
 
         $this->climate->info($this->config->getLoggerPrefix() . 'Got new access token!');
-        $this->climate->info($this->config->getLoggerPrefix() . 'Token: '  . $accessTokenJson->access_token);
+        $this->climate->info($this->config->getLoggerPrefix() . 'Token: ' . $accessTokenJson->access_token);
 
         return $accessTokenJson->access_token;
 
@@ -102,9 +102,9 @@ class Request
     /**
      * Make a request to the API using Guzzle
      *
-     * @param $method string The HTTP VERB to use for this request
-     * @param $url string The relative URL after the hostname
-     * @param null $apiRequest array The contents of the api body
+     * @param      $method      string The HTTP VERB to use for this request
+     * @param      $url         string The relative URL after the hostname
+     * @param null $apiRequest  array The contents of the api body
      * @param null $queryString array Data to add as a queryString to the url
      * @return mixed
      * @throws UnauthorizedMerchantException
@@ -121,8 +121,8 @@ class Request
             'headers' => [
                 'Authorization' => 'Bearer ' . $this->config->getAccessToken()
             ],
-            'json' => $apiRequest,
-            'query' => $queryString
+            'json'    => $apiRequest,
+            'query'   => $queryString
         ];
 
 
@@ -146,11 +146,16 @@ class Request
             }
 
             $this->climate->info($this->config->getLoggerPrefix() . 'Request successful.');
-            $result = json_decode($response->getBody()); //for easier debugging
+
+            if (in_array(current($response->getHeader('Content-Type')), ['image/png','image/jpg'])) {
+                $result = $response->getBody()->getContents();
+            } else {
+                $result = json_decode($response->getBody());
+            }
 
             return $result;
 
-        } catch (ConnectException $c){
+        } catch (ConnectException $c) {
             $this->climate->error($this->config->getLoggerPrefix() . 'Error connecting to endpoint: ' . $c->getMessage());
             throw $c;
         } catch (RequestException $e) {
@@ -168,19 +173,21 @@ class Request
         if (!is_null($error) && isset($error['error'])) {
             $this->climate->error($this->config->getLoggerPrefix() . '<bold>Error: </bold>' . $error['error']);
             $this->climate->error($this->config->getLoggerPrefix() . '<bold>Description: </bold> ' . $error['error_description']);
-        } else if (!is_null($error) && isset($error['message'])) {
-            $this->climate->error($this->config->getLoggerPrefix() . '<bold>Error: </bold>' . $error['message']);
-            if (isset($error['validationErrors'])) {
-                if(is_array($error['validationErrors'])){
-                    foreach ($error['validationErrors'] as $prop => $message) {
-                        $this->climate->error($this->config->getLoggerPrefix() . '-- ' . $prop . ': ' . $message);
-                    }
-                } else {
-                    $this->climate->error($this->config->getLoggerPrefix() . '-- ' . $error['validationErrors']);
-                }
-            }
         } else {
-            $this->climate->error($this->config->getLoggerPrefix() . '<bold>Error: </bold>' . $requestException->getMessage());
+            if (!is_null($error) && isset($error['message'])) {
+                $this->climate->error($this->config->getLoggerPrefix() . '<bold>Error: </bold>' . $error['message']);
+                if (isset($error['validationErrors'])) {
+                    if (is_array($error['validationErrors'])) {
+                        foreach ($error['validationErrors'] as $prop => $message) {
+                            $this->climate->error($this->config->getLoggerPrefix() . '-- ' . $prop . ': ' . $message);
+                        }
+                    } else {
+                        $this->climate->error($this->config->getLoggerPrefix() . '-- ' . $error['validationErrors']);
+                    }
+                }
+            } else {
+                $this->climate->error($this->config->getLoggerPrefix() . '<bold>Error: </bold>' . $requestException->getMessage());
+            }
         }
     }
 
