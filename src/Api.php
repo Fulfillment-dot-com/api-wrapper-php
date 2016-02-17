@@ -137,7 +137,8 @@ class Api
             throw $c;
         } catch (RequestException $e) {
 
-            if ($e->getResponse()->getStatusCode() == 401 || (isset(RequestParser::parseError($e)['error']) && RequestParser::parseError($e)['error'] == 'invalid_request')) {
+            if ($e->getResponse()->getStatusCode() == 401 || (isset(RequestParser::parseError($e)['error']) && RequestParser::parseError($e)['error'] == 'invalid_request')
+                || (isset(RequestParser::parseError($e)['error_code']) && RequestParser::parseError($e)['error_code'] == '1100')) { //check for oauth error, should try a refresh
                 if ($firstTry) {
                     $this->climate->info($this->config->getLoggerPrefix() . 'Possibly expired token, trying to refresh token...');
                     $newToken = $this->http->requestAccessToken();
