@@ -151,6 +151,10 @@ class Request
                 $result = $response->getBody()->getContents();
             } else {
                 $result = json_decode($response->getBody());
+                if(is_null($result)) {
+                    // may not be json, return as string
+                    $result = (string)$response->getBody();
+                }
             }
 
             return $result;
