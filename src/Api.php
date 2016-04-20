@@ -43,9 +43,9 @@ class Api
         } else {
             if (php_sapi_name() !== 'cli') {
                 //if no custom logger and this isn't a CLI app then we need to write to a file
-                $path     = Helper::getStoragePath('logs/') . 'Log--' . date("Y-m-d") . '.log';
-                $resource = fopen($path, 'a');
-                if(!$resource) {
+                $path     = Helper::getStoragePath('logs/');
+                $file = $path . 'Log--' . date("Y-m-d") . '.log';
+                if(!file_exists($path) || !is_writable($path) || !$resource = fopen($file, 'a')) {
                     $this->climate->output->defaultTo('buffer');
                 } else {
                     fclose($resource);
