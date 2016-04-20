@@ -44,10 +44,14 @@ class Api
             if (php_sapi_name() !== 'cli') {
                 //if no custom logger and this isn't a CLI app then we need to write to a file
                 $path     = Helper::getStoragePath('logs/') . 'Log--' . date("Y-m-d") . '.log';
-                $resource = fopen($path, 'a');;
-                fclose($resource);
-                $logFile = new File($path);
-                $this->climate->output->add('file', $logFile)->defaultTo('file');
+                $resource = fopen($path, 'a');
+                if(!$resource) {
+                    $this->climate->output->defaultTo('buffer');
+                } else {
+                    fclose($resource);
+                    $logFile = new File($path);
+                    $this->climate->output->add('file', $logFile)->defaultTo('file');
+                }
 
                 if (!getenv('NOANSI')) {
                     //we want to logs to have ANSI encoding so we can tail the log remotely and get pretty colors
