@@ -49,7 +49,7 @@ class Api
                     $this->climate->output->defaultTo('buffer');
                 } else {
                     fclose($resource);
-                    $logFile = new File($path);
+                    $logFile = new File($file);
                     $this->climate->output->add('file', $logFile)->defaultTo('file');
                 }
 
