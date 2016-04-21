@@ -13,10 +13,16 @@ use GuzzleHttp\Exception\RequestException;
 
 class RequestParser
 {
-    public static function parseError(RequestException $requestException)
+    /**
+     * Returns an object or array of the FDC error parsed from the Guzzle Request exception
+     * @param RequestException $requestException
+     * @param bool             $isAssoc
+     * @return string
+     */
+    public static function parseError(RequestException $requestException, $isAssoc = true)
     {
 
-        $error = $error = json_decode($requestException->getResponse()->getBody(), true);
+        $error = $error = json_decode($requestException->getResponse()->getBody(), $isAssoc);
 
         if (!is_null($error)) {
             return $error;
