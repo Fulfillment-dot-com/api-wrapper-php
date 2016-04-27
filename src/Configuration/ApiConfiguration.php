@@ -24,19 +24,21 @@ class ApiConfiguration implements ConfigContract
     protected $authEndpoint;
     protected $storeToken;
     protected $loggerPrefix;
+    protected $storageTokenPrefix;
 
     public function __construct($data = null)
     {
-        $this->username     = ArrayUtil::get($data['username']);
-        $this->password     = ArrayUtil::get($data['password']);
-        $this->clientId     = ArrayUtil::get($data['clientId']);
-        $this->clientSecret = ArrayUtil::get($data['clientSecret']);
-        $this->accessToken  = ArrayUtil::get($data['accessToken']);
-        $this->endpoint     = ArrayUtil::get($data['endpoint']);
-        $this->scope        = ArrayUtil::get($data['scope']);
-        $this->authEndpoint = ArrayUtil::get($data['authEndpoint'], 'https://auth.fulfillment.com');
-        $this->storeToken   = ArrayUtil::get($data['storeToken'], true);
-        $this->loggerPrefix = ArrayUtil::get($data['loggerPrefix']);
+        $this->username           = ArrayUtil::get($data['username']);
+        $this->password           = ArrayUtil::get($data['password']);
+        $this->clientId           = ArrayUtil::get($data['clientId']);
+        $this->clientSecret       = ArrayUtil::get($data['clientSecret']);
+        $this->accessToken        = ArrayUtil::get($data['accessToken']);
+        $this->endpoint           = ArrayUtil::get($data['endpoint']);
+        $this->scope              = ArrayUtil::get($data['scope']);
+        $this->authEndpoint       = ArrayUtil::get($data['authEndpoint'], 'https://auth.fulfillment.com');
+        $this->storeToken         = ArrayUtil::get($data['storeToken'], true);
+        $this->loggerPrefix       = ArrayUtil::get($data['loggerPrefix']);
+        $this->storageTokenPrefix = ArrayUtil::get($data['storageTokenPrefix']);
     }
 
     public function getUsername()
@@ -102,5 +104,20 @@ class ApiConfiguration implements ConfigContract
     public function getLoggerPrefix()
     {
         return (!is_null($this->loggerPrefix) ? ('[' . $this->loggerPrefix . '] ') : '');
+    }
+
+    public function setStorageTokenPrefix($prefix)
+    {
+        $this->storageTokenPrefix = $prefix;
+    }
+
+    public function getStorageTokenPrefix()
+    {
+        return $this->storageTokenPrefix;
+    }
+
+    public function getStorageTokenFilename()
+    {
+        return ((is_null($this->getStorageTokenPrefix()) ? '' : ($this->getStorageTokenPrefix() . '-')) . 'access_token.txt');
     }
 }

@@ -69,32 +69,34 @@ class Api
                 Dotenv::load($config);
             }
             $data         = [
-                'username'     => getenv('USERNAME') ?: null,
-                'password'     => getenv('PASSWORD') ?: null,
-                'clientId'     => getenv('CLIENT_ID') ?: null,
-                'clientSecret' => getenv('CLIENT_SECRET') ?: null,
-                'accessToken'  => getenv('ACCESS_TOKEN') ?: null,
-                'endPoint'     => getenv('API_ENDPOINT') ?: null,
-                'authEndpoint' => getenv('AUTH_ENDPOINT') ?: null,
-                'scope'        => getenv('SCOPE') ?: null,
-                'storeToken'   => getenv('STORE_TOKEN') ?: null,
-                'loggerPrefix' => getenv('LOGGER_PREFIX') ?: null
+                'username'           => getenv('USERNAME') ?: null,
+                'password'           => getenv('PASSWORD') ?: null,
+                'clientId'           => getenv('CLIENT_ID') ?: null,
+                'clientSecret'       => getenv('CLIENT_SECRET') ?: null,
+                'accessToken'        => getenv('ACCESS_TOKEN') ?: null,
+                'endPoint'           => getenv('API_ENDPOINT') ?: null,
+                'authEndpoint'       => getenv('AUTH_ENDPOINT') ?: null,
+                'scope'              => getenv('SCOPE') ?: null,
+                'storeToken'         => getenv('STORE_TOKEN') ?: null,
+                'loggerPrefix'       => getenv('LOGGER_PREFIX') ?: null,
+                'storageTokenPrefix' => getenv('STORAGE_TOKEN_PREFIX') ?: null
             ];
             $this->config = new ApiConfiguration($data);
 
         } else {
             if (is_array($config)) {
-                $data         = [
-                    'username'     => ArrayUtil::get($config['username']),
-                    'password'     => ArrayUtil::get($config['password']),
-                    'clientId'     => ArrayUtil::get($config['clientId']),
-                    'clientSecret' => ArrayUtil::get($config['clientSecret']),
-                    'accessToken'  => ArrayUtil::get($config['accessToken']),
-                    'endpoint'     => ArrayUtil::get($config['endpoint']),
-                    'authEndpoint' => ArrayUtil::get($config['authEndpoint']),
-                    'scope'        => ArrayUtil::get($config['scope']),
-                    'storeToken'   => ArrayUtil::get($config['storeToken']),
-                    'loggerPrefix' => ArrayUtil::get($config['loggerPrefix'])
+                $data = [
+                    'username'           => ArrayUtil::get($config['username']),
+                    'password'           => ArrayUtil::get($config['password']),
+                    'clientId'           => ArrayUtil::get($config['clientId']),
+                    'clientSecret'       => ArrayUtil::get($config['clientSecret']),
+                    'accessToken'        => ArrayUtil::get($config['accessToken']),
+                    'endpoint'           => ArrayUtil::get($config['endpoint']),
+                    'authEndpoint'       => ArrayUtil::get($config['authEndpoint']),
+                    'scope'              => ArrayUtil::get($config['scope']),
+                    'storeToken'         => ArrayUtil::get($config['storeToken']),
+                    'loggerPrefix'       => ArrayUtil::get($config['loggerPrefix']),
+                    'storageTokenPrefix' => ArrayUtil::get($config['storageTokenPrefix'])
                 ];
                 $this->config = new ApiConfiguration($data);
 
@@ -107,8 +109,8 @@ class Api
 
         if ($this->config->shouldStoreToken() && is_null($this->config->getAccessToken())) {
             //try to get from file
-            if (file_exists(Helper::getStoragePath('auth_access_token.txt'))) {
-                $this->config->setAccessToken(file_get_contents(Helper::getStoragePath('auth_access_token.txt')));
+            if (file_exists(Helper::getStoragePath($this->config->getStorageTokenFilename()))) {
+                $this->config->setAccessToken(file_get_contents(Helper::getStoragePath($this->config->getStorageTokenFilename())));
                 $this->climate->info($this->config->getLoggerPrefix() . 'Got token ' . $this->config->getAccessToken() . ' from storage.');
             }
         }
@@ -150,7 +152,7 @@ class Api
                         $this->config->setAccessToken($newToken);
                         $this->http = new Request($this->guzzle, $this->config, $this->climate);
                         if ($this->config->shouldStoreToken()) {
-                            file_put_contents(Helper::getStoragePath($this->config->getLoggerPrefix() . 'auth_access_token.txt'), $newToken);
+                            file_put_contents(Helper::getStoragePath($this->config->getStorageTokenFilename()), $newToken);
                         }
                     }
                     $this->climate->info($this->config->getLoggerPrefix() . 'Retrying request...');
@@ -180,7 +182,7 @@ class Api
             $this->config->setAccessToken($newToken);
             $this->http = new Request($this->guzzle, $this->config, $this->climate);
             if ($this->config->shouldStoreToken()) {
-                file_put_contents(Helper::getStoragePath($this->config->getLoggerPrefix() . 'auth_access_token.txt'), $newToken);
+                file_put_contents(Helper::getStoragePath($this->config->getStorageTokenFilename()), $newToken);
             }
         }
 

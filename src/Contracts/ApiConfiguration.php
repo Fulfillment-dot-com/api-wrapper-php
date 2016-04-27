@@ -24,4 +24,7 @@ interface ApiConfiguration
     public function shouldStoreToken();
     public function setLoggerPrefix($prefix);
     public function getLoggerPrefix();
+    public function setStorageTokenPrefix($prefix);
+    public function getStorageTokenPrefix();
+    public function getStorageTokenFilename();
 }
