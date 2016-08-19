@@ -160,7 +160,7 @@ class Api
                     return $this->tryRequest($method, $url, $payload, $queryString, false);
                 } else {
                     //something else is wrong and requesting a new token isn't going to fix it
-                    throw new \Exception($this->config->getLoggerPrefix() . 'The request was unauthorized and could not be fixed by refreshing access token.', 0, $e);
+                    throw new \Exception($this->config->getLoggerPrefix() . 'The request was unauthorized and could not be fixed by refreshing access token.', 401, $e);
                 }
             } else {
                 throw $e;
