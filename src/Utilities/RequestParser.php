@@ -11,34 +11,41 @@ namespace Fulfillment\Api\Utilities;
 
 use GuzzleHttp\Exception\RequestException;
 
-class RequestParser
-{
-    /**
-     * Returns an object or array of the FDC error parsed from the Guzzle Request exception
-     * @param RequestException $requestException
-     * @param bool             $isAssoc
-     * @return string
-     */
-    public static function parseError(RequestException $requestException, $isAssoc = true)
-    {
+class RequestParser {
+	/**
+	 * Returns an object or array of the FDC error parsed from the Guzzle Request exception
+	 *
+	 * @param RequestException $requestException
+	 * @param bool             $isAssoc
+	 *
+	 * @return string
+	 */
+	public static function parseError(RequestException $requestException, $isAssoc = true)
+	{
 
-        $error = $error = json_decode($requestException->getResponse()->getBody(), $isAssoc);
+		$error = $error = json_decode($requestException->getResponse()->getBody(), $isAssoc);
 
-        if (!is_null($error)) {
-            return $error;
-        } else {
-            return $requestException->getMessage();
-        }
-    }
+		if (!is_null($error))
+		{
+			return $error;
+		}
+		else
+		{
+			return $requestException->getMessage();
+		}
+	}
 
-    public static function getErrorCode(RequestException $requestException)
-    {
-        $error = $error = json_decode($requestException->getResponse()->getBody());
+	public static function getErrorCode(RequestException $requestException)
+	{
+		$error = $error = json_decode($requestException->getResponse()->getBody());
 
-        if (!is_null($error) && isset($error->error_code)) {
-            return $error->error_code;
-        } else {
-            return null;
-        }
-    }
+		if (!is_null($error) && isset($error->error_code))
+		{
+			return $error->error_code;
+		}
+		else
+		{
+			return null;
+		}
+	}
 }
