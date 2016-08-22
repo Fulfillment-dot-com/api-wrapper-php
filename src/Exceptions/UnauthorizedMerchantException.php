@@ -9,7 +9,6 @@
 namespace Fulfillment\Api\Exceptions;
 
 
-class UnauthorizedMerchantException extends \Exception
-{
+class UnauthorizedMerchantException extends \Exception {
 
 }
