@@ -30,7 +30,6 @@ class Api {
 	 */
 	public function __construct($config = null, $logger = null, $guzzle = null)
 	{
-
 		//setup guzzle
 		$this->guzzle = !is_null($guzzle) ? $guzzle : new Client();
 
@@ -147,7 +146,6 @@ class Api {
 		}
 
 		$this->http = new Request($this->guzzle, $this->config, $this->climate);
-
 	}
 
 	public function config()
@@ -168,7 +166,6 @@ class Api {
 		}
 		catch (RequestException $e)
 		{
-
 			if ($e->getResponse()->getStatusCode() == 401 || (isset(RequestParser::parseError($e)['error']) && RequestParser::parseError($e)['error'] == 'invalid_request') || (isset(RequestParser::parseError($e)['error_code']) && RequestParser::parseError($e)['error_code'] == '1100'))
 			{ //check for oauth error, should try a refresh
 				if ($firstTry)
