@@ -82,8 +82,8 @@ class Request {
 					],
 				],
 			], [
-					'http_errors' => false,
-				]);
+				'http_errors' => false,
+			]);
 		}
 		catch (RequestException $e)
 		{
@@ -121,6 +121,11 @@ class Request {
 
 		//we want to see the url being called
 		$this->climate->out($this->config->getLoggerPrefix() . 'URL: ' . $urlEndPoint);
+
+		if (!isset($queryString['XDEBUG_SESSION_START']))
+		{
+			$queryString['XDEBUG_SESSION_START'] = 'apinext';
+		}
 
 		$data = [
 			'headers' => [
@@ -187,7 +192,7 @@ class Request {
 	private function printError(RequestException $requestException)
 	{
 
-		$error = $error = json_decode($requestException->getResponse()->getBody(), true);
+		$error = json_decode($requestException->getResponse()->getBody(), true);
 
 		if (!is_null($error) && isset($error['error']))
 		{
