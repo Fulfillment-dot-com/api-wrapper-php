@@ -11,6 +11,7 @@ use Fulfillment\Api\Utilities\RequestParser;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Psr7\Response;
 use League\CLImate\CLImate;
 use League\CLImate\Util\Writer\File;
 use League\CLImate\Util\Writer\WriterInterface;
@@ -20,6 +21,7 @@ class Api {
 
 	protected $config;
 	protected $http;
+	protected $lastResponse;
 
 	/**
 	 * @param $config array|string|\Fulfillment\Api\Contracts\ApiConfiguration|null
@@ -155,9 +157,12 @@ class Api {
 
 	protected function tryRequest($method, $url, $payload = null, $queryString = null, $firstTry = true)
 	{
+		$this->lastResponse = null;
 		try
 		{
-			return $this->http->makeRequest($method, $url, $payload, $queryString);
+			$resultArr = $this->http->makeRequest($method, $url, $payload, $queryString);
+			$this->lastResponse = $resultArr['response'];
+			return $resultArr['result'];
 		}
 		catch (ConnectException $c)
 		{
@@ -273,5 +278,15 @@ class Api {
 	public function delete($url, $queryString = null)
 	{
 		return $this->tryRequest('delete', $url, null, $queryString);
+	}
+
+	/**
+	 * Get the Response object from the last successful request
+	 *
+	 * @return Response|null
+	 */
+	public function getLastResponse()
+	{
+		return $this->lastResponse;
 	}
 }

@@ -168,8 +168,9 @@ class Request {
 				}
 			}
 
-			return $result;
-
+			// can't use tuple here because might be using php 5 or 7
+			// and list expansion is reversed depending on which is used
+			return ['result' => $result, 'response' => $response];
 		}
 		catch (ConnectException $c)
 		{
