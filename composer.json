@@ -4,7 +4,7 @@
     "type": "library",
     "require": {
         "guzzlehttp/guzzle": "~6.0",
-        "vlucas/phpdotenv": "~1.0",
+        "vlucas/phpdotenv": "1.*|2.*",
         "league/climate": "~3.2",
         "foxxmd/php-utilities": "dev-master"
     },
